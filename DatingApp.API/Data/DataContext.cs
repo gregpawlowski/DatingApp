@@ -9,5 +9,6 @@ namespace DatingApp.API.Data
 
         // Pluralize the entity name, it will be the table created in the database.
         public DbSet<Value> Values { get; set; }
+        public DbSet<User> Users { get; set; }
     }
 }
