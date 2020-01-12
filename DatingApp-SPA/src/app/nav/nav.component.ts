@@ -1,6 +1,7 @@
 import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { AuthService } from '../_services/auth.service';
+import { AlertifyService } from '../_services/alertify.service';
 
 @Component({
   selector: 'app-nav',
@@ -12,35 +13,34 @@ export class NavComponent implements OnInit, AfterViewInit {
 
   @ViewChild('loginForm', { static: false }) loginForm: NgForm;
 
-  constructor(private authService: AuthService) { }
+  constructor(public authService: AuthService, private alertify: AlertifyService) { }
 
   ngOnInit() {
-    console.log(this.loginForm);
   }
 
   ngAfterViewInit() {
-    console.log('after view', this.loginForm);
   }
 
   login() {
     if (this.loginForm.valid) {
       this.authService.login(this.model)
         .subscribe((next) => {
-          console.log('Logged in successfully');
+          this.alertify.success('Logged in successfully!');
         }, (error) => {
-          console.log(error);
+          this.alertify.error(error);
         });
     }
   }
 
   loggedIn() {
-    const token = localStorage.getItem('token');
-    return !!token;
+    // const token = localStorage.getItem('token');
+    // return !!token;
+    return this.authService.loggedIn();
   }
 
   logout() {
     localStorage.removeItem('token');
-    console.log('Logged out');
+    this.alertify.message('logged out');
   }
 
 }

@@ -12,7 +12,7 @@ export class ErrorInterceptor implements HttpInterceptor {
         if (error instanceof HttpErrorResponse) {
           // Since our API returns an empty messge for 401 errors,
           // it only returns 401 we need to check for that error as well and return some message.
-          if (error.status === 401){
+          if (error.status === 401) {
             return throwError(error.statusText);
           }
           // Check if we have an Application-Error header that we created in the API.

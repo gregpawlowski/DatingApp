@@ -2,6 +2,8 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { HttpClientModule } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
+import { BsDropdownModule } from 'ngx-bootstrap';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -20,10 +22,12 @@ import { ErrorInterceptorProvider } from './_services/error.interceptor';
       RegisterComponent
    ],
    imports: [
+      BrowserAnimationsModule,
       BrowserModule,
       AppRoutingModule,
       HttpClientModule,
-      FormsModule
+      FormsModule,
+      BsDropdownModule.forRoot()
    ],
    providers: [
       ErrorInterceptorProvider
