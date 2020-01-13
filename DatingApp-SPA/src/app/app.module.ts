@@ -7,19 +7,28 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { NavComponent } from './nav/nav.component';
-import { HomeComponent } from './home/home.component';
-import { RegisterComponent } from './register/register.component';
 
 // Providers
 import { ErrorInterceptorProvider } from './_services/error.interceptor';
+
+// Components
+import { NavComponent } from './nav/nav.component';
+import { HomeComponent } from './home/home.component';
+import { RegisterComponent } from './register/register.component';
+import { MemberListComponent } from './member-list/member-list.component';
+import { MessagesComponent } from './messages/messages.component';
+import { ListsComponent } from './lists/lists.component';
+import { AuthGuard } from './_guards/auth.guard';
 
 @NgModule({
    declarations: [
       AppComponent,
       NavComponent,
       HomeComponent,
-      RegisterComponent
+      RegisterComponent,
+      MemberListComponent,
+      MessagesComponent,
+      ListsComponent
    ],
    imports: [
       BrowserAnimationsModule,
@@ -30,7 +39,8 @@ import { ErrorInterceptorProvider } from './_services/error.interceptor';
       BsDropdownModule.forRoot()
    ],
    providers: [
-      ErrorInterceptorProvider
+      ErrorInterceptorProvider,
+      AuthGuard
    ],
    bootstrap: [
       AppComponent
