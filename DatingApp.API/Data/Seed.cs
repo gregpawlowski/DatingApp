@@ -25,12 +25,11 @@ namespace DatingApp.API.Data
         // Need to save in the DB the same way using our repository
         byte[] passwordHash, passwordSalt;
         CreatePasswordHash("password", out passwordHash, out passwordSalt);
-		user.PasswordHash = passwordHash;
-		user.PasswordSalt = passwordSalt;
-		user.Username = user.Username.ToLower();
+        user.PasswordHash = passwordHash;
+        user.PasswordSalt = passwordSalt;
+        user.Username = user.Username.ToLower();
 
-		_context.Users.Add(user);
-
+        _context.Users.Add(user);
       }
 
 	  _context.SaveChanges();
