@@ -39,10 +39,21 @@ namespace DatingApp.API.Data
 			return users;
     }
 
+    public async Task<Photo> GetPhoto(int id) 
+    {
+      return await _context.Photos.FirstOrDefaultAsync(p => p.Id == id);
+    }
+
     public async Task<bool> SaveAll()
     {
 			// If SaveChagnes returns more than 0 SaveAll will return True otherwise it will return false.
       return await _context.SaveChangesAsync() > 0;
     }
+
+    public async Task<Photo> GetMainPhotoForUser(int userId)
+    {
+      return await _context.Photos.Where(u => u.UserId == userId).FirstOrDefaultAsync(p => p.IsMain);
+    }
+
   }
 }

@@ -10,8 +10,8 @@ export class AlertifyService {
 
   constructor() { }
 
-  confirm(message: string, okCallback: () => null) {
-    alertify.confim(message, (e) => {
+  confirm(message: string, okCallback: () => void) {
+    alertify.confirm(message, (e) => {
       if (e) {
         okCallback();
       }
