@@ -52,6 +52,10 @@ namespace DatingApp.API
             // AddScoped Service is creted once per request, within the same http request scope but will be created each time for other calls/scopes.
             services.AddScoped<IAuthRepository, AuthRepository>();
             services.AddScoped<IDatingRepository, DatingRepository>();
+
+            // Add the Action Filter
+            services.AddScoped<LogUserActivity>();
+            
             // Add Authentication
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options => {
