@@ -1,6 +1,8 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using DatingApp.API.Helpers;
 using DatingApp.API.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -32,11 +34,49 @@ namespace DatingApp.API.Data
 			return user;
     }
 
-    public async Task<IEnumerable<User>> GetUsers()
-    {
-      var users = await _context.Users.Include(p => p.Photos).ToListAsync();
+    public async Task<PageList<User>> GetUsers(UserParams userParams)
+    { 
+      // Create an IQueriable of Users from the context but don't execute it yet.
+      // Set it as a Queryable so we can add more where clauses
+      var users = _context.Users.Include(p => p.Photos)
+        // Add default ordering by Last Active descending.
+        .OrderByDescending(u => u.LastActive).AsQueryable();
 
-			return users;
+      // Filter out the current user
+      users = users.Where(u => u.Id != userParams.UserId);
+
+      // Filter out the gender
+      users = users.Where(u => u.Gender == userParams.Gender);
+
+      // If the age filter is not default 
+      if (userParams.MinAge != 18 | userParams.MaxAge != 99)
+      {
+        // We store the 
+        // Minimum date of birth will be today minus the max age the person selected
+        var minDob = DateTime.Today.AddYears(-userParams.MaxAge - 1);
+        // Maximum date of birth is going to be today minus the min age the person selcted.
+        var maxDob = DateTime.Today.AddYears(-userParams.MinAge);
+        // Add filter to the users QUERYABLE.
+        users = users.Where(u => u.DateOfBirth >= minDob && u.DateOfBirth <= maxDob);
+
+      }
+
+      // Check if order By is passed in to Params
+      if (!string.IsNullOrEmpty(userParams.OrderBy))
+      {
+        switch (userParams.OrderBy) 
+        {
+          case "created":
+            users = users.OrderByDescending(u => u.Created);
+            break;
+          default:
+            users = users.OrderByDescending(u => u.LastActive);
+            break;
+        }
+      }
+      
+      // Pass in our source and excecute the method.
+			return await PageList<User>.CreateAsync(users, userParams.PageNumber, userParams.PageSize);
     }
 
     public async Task<Photo> GetPhoto(int id) 

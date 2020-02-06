@@ -25,17 +25,33 @@ namespace DatingApp.API.Controllers
     }
 
     [HttpGet]
-    public async Task<IActionResult> getUsers()
+    public async Task<IActionResult> GetUsers([FromQuery]UserParams userParams)
     {
-      var users = await _repo.GetUsers();
+      //Get currently loggedin UserID
+      var currentUserId =  int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
+
+      // Get currently Logged in user so we can know the gender etc.
+      var userFromRepo = await _repo.GetUser(currentUserId);
+      
+      userParams.UserId = currentUserId;
+
+      // If we don't have a gender in the params we have to set it to whetever the opposite is of the currently logged in user 
+      if (string.IsNullOrEmpty(userParams.Gender)) 
+      {
+        userParams.Gender = userFromRepo.Gender == "male" ? "female" : "male";
+      }
+
+      var users = await _repo.GetUsers(userParams);
 
       var usersToReturn = _mapper.Map<IEnumerable<UserForListDto>>(users);
+
+      Response.AddPagination(users.CurrentPage, users.PageSize, users.TotalCount, users.TotalPages);
 
       return Ok(usersToReturn);
     }
 
     [HttpGet("{id}", Name="GetUser")]
-    public async Task<IActionResult> getUser(int id)
+    public async Task<IActionResult> GetUser(int id)
     {
       var user = await _repo.GetUser(id);
 
@@ -45,7 +61,7 @@ namespace DatingApp.API.Controllers
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> updateUser(int id, [FromBody]UserForUpdateDto userForUpdateDto)
+    public async Task<IActionResult> UpdateUser(int id, [FromBody]UserForUpdateDto userForUpdateDto)
     {
       // Compare that the id the user wants to update matches the id that was passed in the token.
       if (id != int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))
