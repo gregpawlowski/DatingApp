@@ -1,1 +1,21 @@
-<p>lists works!</p>
+<div class="text-center mt-3">
+  <h2>{{likesParam === 'Likers' ? 'Members who like me' : 'Members who I\'ve liked'}} : {{pagination.totalItems}}</h2>
+</div>
+
+<div class="container mt-3">
+
+  <div class="row">
+    <div class="btn-group">
+      <button class="btn btn-primary" [(ngModel)]="likesParam" btnRadio="Likers" (click)="loadUsers()">Members who like me</button>
+      <button class="btn btn-primary" [(ngModel)]="likesParam" btnRadio="Likees" (click)="loadUsers()">Members who I've liked</button>
+    </div>
+  </div>
+
+  <br>
+
+  <div class="row">
+    <div class="col-sm-6 col-md-4 col-lg-4 col-xl-2" *ngFor="let user of users">
+      <app-member-card [user]="user"></app-member-card>
+    </div>
+  </div>
+</div>
