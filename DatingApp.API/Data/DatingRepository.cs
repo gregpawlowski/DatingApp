@@ -136,5 +136,62 @@ namespace DatingApp.API.Data
       // Make sure realtionship between liker and likee exists.
       return await _context.Likes.FirstOrDefaultAsync(u => u.LikerId == userId && u.LikeeId == recipientId);
     }
+
+    public async Task<Message> GetMessage(int id)
+    {
+      return await _context.Messages.FirstOrDefaultAsync(m => m.Id == id);
+    }
+
+    public async Task<PageList<Message>> GetMessagesForUser(MessageParams messageParams)
+    {
+      var messages = _context.Messages
+        // We want to inlcue the sender in this case
+        .Include(u => u.Sender)
+        // We also want to include the photos the sender will have becuase we will be displaying them in the messages
+        .ThenInclude(p => p.Photos)
+        // Also inlcude the recipient and their photos.
+        .Include(u => u.Recipient)
+        .ThenInclude(p => p.Photos)
+        // Change this to a Queryable becuase we will be adding a Where clause
+        .AsQueryable();
+
+      // Filter out
+      switch(messageParams.MessageContainer) 
+      {
+        case "Inbox":
+          messages = messages.Where(m => m.RecipientId == messageParams.UserId && m.RecipientDeleted == false);
+          break;
+        case "Outbox":
+          messages = messages.Where(m => m.SenderId == messageParams.UserId && m.SenderDeleted == false);
+          break;
+        default:
+          // Default will be all unread messages for the user.
+          messages = messages.Where(u => u.RecipientId == messageParams.UserId && u.IsRead == false && u.RecipientDeleted == false);
+          break;
+      }
+
+      messages = messages.OrderByDescending(d => d.MessageSent);
+
+      return await PageList<Message>.CreateAsync(messages, messageParams.PageNumber, messageParams.PageSize);
+    }
+
+    public async Task<IEnumerable<Message>> GetMessageThread(int userId, int recipientId)
+    {
+      var messages = await _context.Messages
+        // We want to inlcue the sender in this case
+        .Include(u => u.Sender)
+        // We also want to include the photos the sender will have becuase we will be displaying them in the messages
+        .ThenInclude(p => p.Photos)
+        // Also inlcude the recipient and their photos.
+        .Include(u => u.Recipient)
+        .ThenInclude(p => p.Photos)
+        // Get the complete thread. Any messagees sent sent from or to recipient and vise versa.
+        .Where(m => m.RecipientId == userId && m.RecipientDeleted == false && m.SenderId == recipientId || m.RecipientId == recipientId && m.SenderId == userId && m.SenderDeleted == false)
+        // Order by Mesage sent
+        .OrderByDescending(m => m.MessageSent)
+        .ToListAsync();
+
+        return messages;
+    }
   }
 }
