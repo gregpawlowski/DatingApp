@@ -1,4 +1,4 @@
-import { BrowserModule } from '@angular/platform-browser';
+import { BrowserModule, HammerGestureConfig, HAMMER_GESTURE_CONFIG } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { HttpClientModule } from '@angular/common/http';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -33,6 +33,13 @@ import { TimeAgoPipe } from 'time-ago-pipe';
 
 export function tokenGetter() {
    return localStorage.getItem('token');
+}
+
+export class CustomHammerConfig extends HammerGestureConfig  {
+   overrides = {
+       pinch: { enable: false },
+       rotate: { enable: false }
+   };
 }
 
 @NgModule({
@@ -75,7 +82,8 @@ export function tokenGetter() {
    ],
    providers: [
       ErrorInterceptorProvider,
-      AuthGuard
+      AuthGuard,
+      { provide: HAMMER_GESTURE_CONFIG, useClass: CustomHammerConfig }
    ],
    bootstrap: [
       AppComponent

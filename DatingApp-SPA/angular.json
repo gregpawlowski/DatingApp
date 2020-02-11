@@ -17,7 +17,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "outputPath": "dist/DatingApp-SPA",
+            "outputPath": "../DatingApp.API/wwwroot",
             "index": "src/index.html",
             "main": "src/main.ts",
             "polyfills": "src/polyfills.ts",
@@ -41,6 +41,9 @@
             ]
           },
           "configurations": {
+            "es5": {
+              "tsConfig": "./tsconfig.es5.json"
+            },
             "production": {
               "fileReplacements": [
                 {
@@ -73,6 +76,9 @@
             "browserTarget": "DatingApp-SPA:build"
           },
           "configurations": {
+            "es5": {
+              "browserTarget": "DatingApp-SPA:build:es5"
+            },
             "production": {
               "browserTarget": "DatingApp-SPA:build:production"
             }
