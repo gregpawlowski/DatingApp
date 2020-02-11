@@ -38,7 +38,7 @@ namespace DatingApp.API
             // Services are available to be injected into other parts of our application.
             // Set type to our DataContext.
             services.AddDbContext<DataContext>(x => x.UseSqlite(Configuration.GetConnectionString("DefaultConnection")));
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1)
+            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
                 .AddJsonOptions(opts => {
                     // Ignore Reference Loop Handling
                     opts.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
@@ -71,7 +71,7 @@ namespace DatingApp.API
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, Seed seeder)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
             if (env.IsDevelopment())
             {
@@ -100,7 +100,6 @@ namespace DatingApp.API
             // Remove HTTPS
             // app.UseHttpsRedirection();
             // Next time application is started this will be called.
-            // seeder.SeedUsers();
             app.UseCors(x => x.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
             app.UseAuthentication();
             // Will automatcially look for index.html
