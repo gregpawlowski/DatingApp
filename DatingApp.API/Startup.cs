@@ -20,6 +20,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using AutoMapper;
+using Microsoft.Extensions.Hosting;
 
 namespace DatingApp.API
 {
@@ -38,11 +39,11 @@ namespace DatingApp.API
             // Services are available to be injected into other parts of our application.
             // Set type to our DataContext.
             services.AddDbContext<DataContext>(x => x.UseSqlite(Configuration.GetConnectionString("DefaultConnection")));
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
-                .AddJsonOptions(opts => {
-                    // Ignore Reference Loop Handling
-                    opts.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
+            services.AddControllers()
+                .AddNewtonsoftJson(opt => {
+                    opt.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
                 });
+
             services.AddCors();
             // Register the configuration instance that TOptions will bind against.
             services.Configure<CloudinarySettings>(Configuration.GetSection("CloudinarySettings"));
@@ -71,7 +72,7 @@ namespace DatingApp.API
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
             {
@@ -99,23 +100,20 @@ namespace DatingApp.API
             }
             // Remove HTTPS
             // app.UseHttpsRedirection();
-            // Next time application is started this will be called.
+            // Routing needs to be added in 3.0
+            app.UseRouting();
             app.UseCors(x => x.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
+            // Need to add use Authorization() for Core 3.0
             app.UseAuthentication();
+            app.UseAuthorization();
             // Will automatcially look for index.html
             app.UseDefaultFiles();
             // will look for wwwroot folder for static files.
             app.UseStaticFiles();
-            app.UseMvc(routes => {
-                // Fallback for all routes that are not configured in our API
-                routes.MapSpaFallbackRoute(
-                    // If we don't find a route in our controllers then use this controller below:
-                    name: "spa-fallback",
-                    defaults: new {
-                        controller = "Fallback",
-                        action = "Index"
-                    }
-                );
+
+            app.UseEndpoints(endpoints => {
+                endpoints.MapControllers();
+                endpoints.MapFallbackToController("Index", "Fallback");
             });
         }
     }
