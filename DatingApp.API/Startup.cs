@@ -103,7 +103,21 @@ namespace DatingApp.API
             // seeder.SeedUsers();
             app.UseCors(x => x.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
             app.UseAuthentication();
-            app.UseMvc();
+            // Will automatcially look for index.html
+            app.UseDefaultFiles();
+            // will look for wwwroot folder for static files.
+            app.UseStaticFiles();
+            app.UseMvc(routes => {
+                // Fallback for all routes that are not configured in our API
+                routes.MapSpaFallbackRoute(
+                    // If we don't find a route in our controllers then use this controller below:
+                    name: "spa-fallback",
+                    defaults: new {
+                        controller = "Fallback",
+                        action = "Index"
+                    }
+                );
+            });
         }
     }
 }
