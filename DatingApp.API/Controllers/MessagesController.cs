@@ -44,7 +44,7 @@ namespace DatingApp.API.Controllers
     public async Task<IActionResult> CreateMessage(int userId, [FromBody]MessageForCreationDto messageForCreationDto)
     {
         // Get the sender beucae we ned autoMapper to map the sender info later.
-        var sender = await _repo.GetUser(userId);
+        var sender = await _repo.GetUser(userId, false);
 
         // Compare that the id the user wants to update matches the id that was passed in the token.
         if (sender.Id != int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))
@@ -54,7 +54,7 @@ namespace DatingApp.API.Controllers
         messageForCreationDto.SenderId = userId;
         
         // Check if the user this user is trying to send this message to exists
-        var recipient = await _repo.GetUser(messageForCreationDto.RecipientId);
+        var recipient = await _repo.GetUser(messageForCreationDto.RecipientId, false);
 
         if (recipient == null)
             return BadRequest("Could not find user");

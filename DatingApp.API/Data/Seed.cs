@@ -53,6 +53,9 @@ namespace DatingApp.API.Data
 
           // context.Users.Add(user);
 
+          // Get the only photo for this user and set it to approved
+          user.Photos.SingleOrDefault().IsApproved = true;
+
           // Create a user using the userManager, pass in the user and apsswrod and specify Wait() because this is a Async Method and we are ont in a async function.
           userManager.CreateAsync(user, "password").Wait();
           userManager.AddToRoleAsync(user, "Member").Wait();

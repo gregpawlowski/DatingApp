@@ -14,6 +14,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System.Linq;
 using System.Collections.Generic;
+using Microsoft.EntityFrameworkCore;
 
 namespace DatingApp.API.Controllers
 {
@@ -95,7 +96,10 @@ namespace DatingApp.API.Controllers
 
       if (result.Succeeded)
       {
-        var userToSendDown = _mapper.Map<UserForListDto>(user);
+        var appUser = await _userManager.Users.Include(p => p.Photos)
+                    .FirstOrDefaultAsync(u => u.NormalizedUserName == userForLoginDto.Username.ToUpper());
+                    
+        var userToSendDown = _mapper.Map<UserForListDto>(appUser);
 
         return Ok(new
         {

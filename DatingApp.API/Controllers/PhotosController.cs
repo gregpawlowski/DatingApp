@@ -95,7 +95,7 @@ namespace DatingApp.API.Controllers
       var photo = _mapper.Map<Photo>(photoForCreationDto);
 
       // Get ther user becuaes we will need to use the user info.
-      var userFromRepo = await _repo.GetUser(userId);
+      var userFromRepo = await _repo.GetUser(userId, true);
 
       // Check if the user has a main photo already, if they don't, set this new photo to be their main photo.
       if (!userFromRepo.Photos.Any(u => u.IsMain))
@@ -124,7 +124,7 @@ namespace DatingApp.API.Controllers
       if (userId != int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))
         return Unauthorized();
 
-			var user = await _repo.GetUser(userId);
+			var user = await _repo.GetUser(userId, true);
 
 			// Check if user acutally has this photo ID in their collection. If not return unauthorized.
 			if (!user.Photos.Any(p => p.Id == id))
@@ -156,7 +156,7 @@ namespace DatingApp.API.Controllers
       if (userId != int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))
         return Unauthorized();
 
-      var userFromRepo = await _repo.GetUser(userId);
+      var userFromRepo = await _repo.GetUser(userId, true);
 
       // Check to make sure the photo they are deleting is in the user's Photos.
       if (!userFromRepo.Photos.Any(p => p.Id == id))
