@@ -48,4 +48,18 @@ export class AuthService {
   changeMemberPhoto(photoUrl: string) {
     this.photoUrl.next(photoUrl);
   }
+
+  roleMatch(allowedRoles: string[]): boolean {
+    let isMatch = false;
+    const userRoles = this.decodedToken.role as Array<string>;
+
+    allowedRoles.forEach(role => {
+      if (userRoles.includes(role)) {
+        isMatch = true;
+        return;
+      }
+    });
+
+    return isMatch;
+  }
 }

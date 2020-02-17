@@ -1,9 +1,11 @@
 using System.IO;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DatingApp.API.Controllers
 {
     // need to derive from Contrlller becuuse we need access to views
+    [AllowAnonymous]
     public class FallbackController: Controller
     {
         public IActionResult Index() 
